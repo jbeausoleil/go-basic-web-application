@@ -21,8 +21,14 @@ func main() {
 	}
 
 	app.TemplateCache = tc
-	http.HandleFunc("/", handlers.Home)
-	http.HandleFunc("/about", handlers.About)
+	app.UseCache = false
+	render.NewTemplates(&app) // pass in the memory address of app to NewTemplates and return the value
+
+	repo := handlers.NewRepo(&app)
+	handlers.NewHandlers(repo)
+
+	http.HandleFunc("/", handlers.Repo.Home)
+	http.HandleFunc("/about", handlers.Repo.About)
 
 	fmt.Println(fmt.Sprintf("Starting application on port http://localhost%s", portNumber))
 	_ = http.ListenAndServe(portNumber, nil)
